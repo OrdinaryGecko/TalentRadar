@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 
 from app.jd_parser import JobDescriptionParser
-from app.models import JobParseRequest, JobParseResponse
+from app.matcher import CandidateMatcher
+from app.models import JobParseRequest, JobParseResponse, MatchRequest, MatchResponse
 from app.repository import CandidateRepository
 
 app = FastAPI(
@@ -12,6 +13,7 @@ app = FastAPI(
 
 candidate_repository = CandidateRepository()
 job_description_parser = JobDescriptionParser()
+candidate_matcher = CandidateMatcher()
 
 
 @app.get("/health")
@@ -42,3 +44,15 @@ async def get_candidate(candidate_id: str) -> dict[str, object]:
 @app.post("/jobs/parse", response_model=JobParseResponse)
 async def parse_job_description(payload: JobParseRequest) -> JobParseResponse:
     return job_description_parser.parse(payload.raw_description)
+
+
+@app.post("/jobs/match", response_model=MatchResponse)
+async def match_candidates(payload: MatchRequest) -> MatchResponse:
+    parsed_job = job_description_parser.parse(payload.raw_description)
+    results = await candidate_matcher.rank_candidates(
+        parsed_job=parsed_job,
+        candidates=candidate_repository.list_candidates(),
+        limit=payload.limit,
+    )
+
+    return MatchResponse(parsed_job=parsed_job, results=results)

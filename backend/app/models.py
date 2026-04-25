@@ -37,6 +37,11 @@ class JobParseRequest(BaseModel):
     raw_description: str = Field(min_length=20)
 
 
+class MatchRequest(BaseModel):
+    raw_description: str = Field(min_length=20)
+    limit: int = Field(default=5, ge=1, le=20)
+
+
 class JobParseSignal(BaseModel):
     section: str
     value: str
@@ -74,10 +79,15 @@ class Candidate(BaseModel):
 
 
 class MatchExplanation(BaseModel):
+    summary: str
     strengths: list[str] = Field(default_factory=list)
     concerns: list[str] = Field(default_factory=list)
-    matched_skills: list[str] = Field(default_factory=list)
-    missing_skills: list[str] = Field(default_factory=list)
+    matched_capabilities: list[str] = Field(default_factory=list)
+    missing_capabilities: list[str] = Field(default_factory=list)
+    matched_preferred_capabilities: list[str] = Field(default_factory=list)
+    missing_preferred_capabilities: list[str] = Field(default_factory=list)
+    provider: str = "local"
+    generation_mode: str = "deterministic"
 
 
 class CandidateMatch(BaseModel):
@@ -85,6 +95,17 @@ class CandidateMatch(BaseModel):
     candidate_id: str
     match_score: float
     explanation: MatchExplanation
+
+
+class CandidateMatchResult(BaseModel):
+    candidate: Candidate
+    match_score: float
+    explanation: MatchExplanation
+
+
+class MatchResponse(BaseModel):
+    parsed_job: JobParseResponse
+    results: list[CandidateMatchResult] = Field(default_factory=list)
 
 
 class ConversationTurn(BaseModel):
