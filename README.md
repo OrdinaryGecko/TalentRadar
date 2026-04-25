@@ -1,8 +1,8 @@
-# Catalyst
+# TalentRadar
 
-AI-powered talent scouting and engagement agent prototype.
+Scan. Match. Engage. Hire.
 
-Catalyst takes a job description, parses it into structured requirements, matches it against a seeded candidate pool, simulates recruiter outreach, scores candidate interest, and produces a ranked shortlist with explainable `match_score` and `interest_score`.
+TalentRadar takes a job description, parses it into structured requirements, matches it against a seeded candidate pool, simulates recruiter outreach, scores candidate interest, and produces a ranked shortlist with explainable `match_score` and `interest_score`.
 
 ## What It Covers
 
@@ -51,7 +51,7 @@ Frontend runs on `http://127.0.0.1:5173` and proxies API calls to the backend on
 
 ## LLM Configuration
 
-Catalyst supports provider-based explanation generation. Put these in `backend/.env`:
+TalentRadar supports provider-based explanation generation. Put these in `backend/.env`:
 
 ```bash
 LLM_PROVIDER=local

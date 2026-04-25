@@ -132,7 +132,8 @@ export default function App() {
   return (
     <main className="app-shell">
       <section className="hero">
-        <p className="eyebrow">Catalyst</p>
+        <p className="eyebrow">TalentRadar</p>
+        <p className="tagline">Scan. Match. Engage. Hire.</p>
         <h1>Rank talent by fit and real engagement intent.</h1>
         <p className="lead">
           Paste a job description, parse it into structured requirements, score

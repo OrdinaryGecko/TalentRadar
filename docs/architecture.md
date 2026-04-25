@@ -1,4 +1,4 @@
-# Catalyst Architecture
+# TalentRadar Architecture
 
 ## End-to-End Flow
 

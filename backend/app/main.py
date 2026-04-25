@@ -18,7 +18,7 @@ from app.repository import CandidateRepository
 from app.shortlist import ShortlistRanker
 
 app = FastAPI(
-    title="Catalyst API",
+    title="TalentRadar API",
     description="Backend API for the talent scouting and engagement agent",
     version="0.1.0",
 )

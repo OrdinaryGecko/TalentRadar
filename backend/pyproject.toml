@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "catalyst-backend"
+name = "talentradar-backend"
 version = "0.1.0"
-description = "Backend for the Catalyst talent scouting prototype"
+description = "Backend for the TalentRadar talent scouting prototype"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
