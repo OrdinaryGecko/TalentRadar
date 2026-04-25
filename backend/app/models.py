@@ -135,6 +135,11 @@ class OutreachResponse(BaseModel):
     results: list[OutreachResult] = Field(default_factory=list)
 
 
+class ShortlistRequest(BaseModel):
+    raw_description: str = Field(min_length=20)
+    limit: int = Field(default=5, ge=1, le=10)
+
+
 class ConversationTurn(BaseModel):
     speaker: str
     message: str
@@ -148,8 +153,15 @@ class Conversation(BaseModel):
 
 
 class ShortlistEntry(BaseModel):
-    job_id: str
-    candidate_id: str
+    candidate: Candidate
     match_score: float
     interest_score: float
     combined_score: float
+    explanation: MatchExplanation
+    interest: InterestAssessment
+    conversation: Conversation
+
+
+class ShortlistResponse(BaseModel):
+    parsed_job: JobParseResponse
+    results: list[ShortlistEntry] = Field(default_factory=list)

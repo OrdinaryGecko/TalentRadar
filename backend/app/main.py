@@ -10,9 +10,12 @@ from app.models import (
     OutreachRequest,
     OutreachResponse,
     OutreachResult,
+    ShortlistRequest,
+    ShortlistResponse,
 )
 from app.outreach import OutreachSimulator
 from app.repository import CandidateRepository
+from app.shortlist import ShortlistRanker
 
 app = FastAPI(
     title="Catalyst API",
@@ -24,6 +27,7 @@ candidate_repository = CandidateRepository()
 job_description_parser = JobDescriptionParser()
 candidate_matcher = CandidateMatcher()
 outreach_simulator = OutreachSimulator()
+shortlist_ranker = ShortlistRanker()
 
 
 @app.get("/health")
@@ -103,3 +107,20 @@ async def run_outreach(payload: OutreachRequest) -> OutreachResponse:
         )
 
     return OutreachResponse(parsed_job=parsed_job, results=outreach_results)
+
+
+@app.post("/jobs/shortlist", response_model=ShortlistResponse)
+async def build_shortlist(payload: ShortlistRequest) -> ShortlistResponse:
+    outreach_response = await run_outreach(
+        OutreachRequest(
+            raw_description=payload.raw_description,
+            limit=payload.limit,
+            candidate_ids=[],
+        )
+    )
+    shortlist = shortlist_ranker.rank(outreach_response.results)
+
+    return ShortlistResponse(
+        parsed_job=outreach_response.parsed_job,
+        results=shortlist,
+    )
