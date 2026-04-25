@@ -108,6 +108,33 @@ class MatchResponse(BaseModel):
     results: list[CandidateMatchResult] = Field(default_factory=list)
 
 
+class InterestAssessment(BaseModel):
+    interest_score: float
+    interest_level: str
+    positives: list[str] = Field(default_factory=list)
+    blockers: list[str] = Field(default_factory=list)
+    summary: str
+
+
+class OutreachRequest(BaseModel):
+    raw_description: str = Field(min_length=20)
+    candidate_ids: list[str] = Field(default_factory=list)
+    limit: int = Field(default=3, ge=1, le=10)
+
+
+class OutreachResult(BaseModel):
+    candidate: Candidate
+    match_score: float
+    explanation: MatchExplanation
+    conversation: Conversation | None = None
+    interest: InterestAssessment | None = None
+
+
+class OutreachResponse(BaseModel):
+    parsed_job: JobParseResponse
+    results: list[OutreachResult] = Field(default_factory=list)
+
+
 class ConversationTurn(BaseModel):
     speaker: str
     message: str

@@ -38,7 +38,11 @@ class LLMSettings:
 
 class LLMClient:
     def __init__(self, settings: LLMSettings | None = None) -> None:
-        self.settings = settings or LLMSettings.from_env()
+        self._settings = settings
+
+    @property
+    def settings(self) -> LLMSettings:
+        return self._settings or LLMSettings.from_env()
 
     def is_enabled(self) -> bool:
         provider = self.settings.provider.lower()

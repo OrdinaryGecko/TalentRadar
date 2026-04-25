@@ -9,6 +9,7 @@ FastAPI service for JD parsing, candidate retrieval, scoring, and outreach simul
 - `GET /candidates/{candidate_id}`
 - `POST /jobs/parse`
 - `POST /jobs/match`
+- `POST /jobs/outreach`
 
 ## Local Commands
 
@@ -38,6 +39,17 @@ curl -X POST http://127.0.0.1:8000/jobs/match \
   -d '{
     "raw_description": "Senior AI Engineer\nSeniority: senior\nLocation: India\nWork mode: Remote\n\nRequirements:\n- 5+ years of experience\n- Python\n- FastAPI\n- LLMs\n- pgvector\n\nNice to have:\n- AWS",
     "limit": 3
+  }'
+```
+
+## Example Outreach Request
+
+```bash
+curl -X POST http://127.0.0.1:8000/jobs/outreach \
+  -H "content-type: application/json" \
+  -d '{
+    "raw_description": "Senior AI Engineer\nSeniority: senior\nLocation: India\nWork mode: Remote\n\nRequirements:\n- 5+ years of experience\n- Python\n- FastAPI\n- LLMs\n- pgvector\n\nNice to have:\n- AWS",
+    "limit": 2
   }'
 ```
 

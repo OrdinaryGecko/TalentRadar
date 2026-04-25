@@ -35,4 +35,4 @@ uvicorn app.main:app --reload
 
 ## Current Status
 
-Project scaffold, local data foundation, generic structural JD parsing, and explainable candidate matching are in place. Outreach and interest scoring are not implemented yet.
+Project scaffold, local data foundation, generic structural JD parsing, explainable candidate matching, and outreach simulation are in place. Frontend workflow and submission assets are not implemented yet.
