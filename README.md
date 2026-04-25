@@ -35,4 +35,4 @@ uvicorn app.main:app --reload
 
 ## Current Status
 
-Project scaffold is in place. Matching, scoring, and outreach flows are not implemented yet.
+Project scaffold, local data foundation, and generic structural JD parsing are in place. Matching, scoring, and outreach flows are not implemented yet.
