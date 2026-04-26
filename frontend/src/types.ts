@@ -4,6 +4,29 @@ export type TranscriptTurn = {
   turn_index: number;
 };
 
+export type CandidateSeedRecord = {
+  id: string;
+  full_name: string;
+  headline: string;
+  location: string;
+  work_mode_preferences: Array<"remote" | "hybrid" | "onsite">;
+  years_experience: number;
+  current_title: string;
+  current_company: string;
+  skills: string[];
+  domain_experience: string[];
+  summary: string;
+  persona:
+    | "actively_looking"
+    | "passively_open"
+    | "compensation_sensitive"
+    | "location_constrained"
+    | "currently_unavailable";
+  availability_days: number;
+  compensation_expectation_lpa: number;
+  engagement_status: "active" | "passive" | "unavailable";
+};
+
 export type ConversationRecord = {
   simulation_index: number;
   provider: string;

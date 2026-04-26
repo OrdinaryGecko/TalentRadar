@@ -84,7 +84,7 @@ class OutreachSimulator:
         simulation_index: int,
     ) -> dict[str, object] | None:
         try:
-            return await self.llm_client.generate_json(
+            payload = await self.llm_client.generate_json(
                 system_prompt=self._system_prompt(),
                 user_prompt=self._user_prompt(
                     parsed_job=parsed_job,
@@ -93,6 +93,7 @@ class OutreachSimulator:
                 ),
                 temperature=0.8,
             )
+            return payload
         except Exception:
             return None
 
@@ -101,10 +102,14 @@ class OutreachSimulator:
             "You simulate short recruiter outreach for a recruiting workflow. "
             "Return strict JSON only. "
             "The transcript must contain exactly 4 messages alternating recruiter, candidate, recruiter, candidate. "
+            "Each transcript item must be an object with exactly these keys: speaker, message. "
+            "Valid speaker values are only recruiter or candidate. "
             "Use concise, realistic professional language. "
             "Also score candidate interest and a small post-conversation match adjustment. "
             "JSON keys: transcript, interest_score, interest_level, positives, blockers, summary, match_adjustment. "
             "match_adjustment must be a number between -8 and 5. "
+            "interest_level must be one of: high, medium, low. "
+            "Do not return transcript as plain strings. "
             "Do not invent factual background beyond the provided candidate profile."
         )
 
@@ -163,6 +168,21 @@ class OutreachSimulator:
         for index, speaker in enumerate(expected_speakers):
             item = value[index]
 
+            if isinstance(item, str):
+                message = item.strip()
+
+                if not message:
+                    return fallback
+
+                transcript.append(
+                    ConversationTurn(
+                        speaker=speaker,
+                        turn_index=index,
+                        message=message,
+                    )
+                )
+                continue
+
             if not isinstance(item, dict):
                 return fallback
 
@@ -203,6 +223,16 @@ class OutreachSimulator:
 
         interest_score = round(max(0.0, min(100.0, interest_score)), 1)
         raw_level = str(llm_payload.get("interest_level", "")).strip().lower()
+        raw_level = {
+            "very high": "high",
+            "high interest": "high",
+            "passive": "medium",
+            "passively open": "medium",
+            "open": "medium",
+            "neutral": "medium",
+            "low interest": "low",
+            "not interested": "low",
+        }.get(raw_level, raw_level)
 
         if raw_level not in {"high", "medium", "low"}:
             if interest_score >= 75:

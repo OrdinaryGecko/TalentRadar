@@ -85,3 +85,45 @@ async def test_shortlist_endpoint_returns_ranked_output() -> None:
     assert len(payload["results"]) == 3
     assert payload["results"][0]["combined_score"] >= payload["results"][1]["combined_score"]
     assert "interest_score" in payload["results"][0]
+
+
+@pytest.mark.anyio
+async def test_shortlist_endpoint_accepts_custom_candidate_pool() -> None:
+    custom_candidates = [
+        {
+            "id": "custom_001",
+            "full_name": "Custom Candidate",
+            "headline": "Senior AI engineer with strong FastAPI background",
+            "location": "Bengaluru, India",
+            "work_mode_preferences": ["remote"],
+            "years_experience": 6,
+            "current_title": "Senior AI Engineer",
+            "current_company": "Custom Labs",
+            "skills": ["Python", "FastAPI", "LLMs", "pgvector"],
+            "domain_experience": ["SaaS"],
+            "summary": "Built retrieval systems and backend AI workflows.",
+            "persona": "actively_looking",
+            "availability_days": 15,
+            "compensation_expectation_lpa": 32,
+            "engagement_status": "active",
+        }
+    ]
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://testserver",
+    ) as client:
+        response = await client.post(
+            "/jobs/shortlist",
+            json={
+                "raw_description": SAMPLE_SHORTLIST_JD,
+                "limit": 3,
+                "candidates": custom_candidates,
+            },
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert len(payload["results"]) == 1
+    assert payload["results"][0]["candidate"]["id"] == "custom_001"

@@ -4,7 +4,7 @@ import { Dashboard } from "./components/Dashboard";
 import { JDInput } from "./components/JDInput";
 import { ProcessingState } from "./components/ProcessingState";
 import { buildShortlist, resimulateCandidate } from "./lib/api";
-import type { CandidateRecord } from "./types";
+import type { CandidateRecord, CandidateSeedRecord } from "./types";
 
 type View = "input" | "processing" | "dashboard";
 
@@ -29,6 +29,7 @@ export default function App() {
   const [activeJd, setActiveJd] = useState<string>(sampleJd);
   const [jobTitle, setJobTitle] = useState<string>("");
   const [candidates, setCandidates] = useState<CandidateRecord[]>([]);
+  const [candidatePool, setCandidatePool] = useState<CandidateSeedRecord[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [resimulatingId, setResimulatingId] = useState<string | null>(null);
 
@@ -37,7 +38,7 @@ export default function App() {
     setError(null);
 
     try {
-      const shortlist = await buildShortlist(jd);
+      const shortlist = await buildShortlist(jd, candidatePool);
       setActiveJd(jd);
       setJobTitle(shortlist.parsed_job.normalized_requirement.role);
       setCandidates(shortlist.results);
@@ -61,6 +62,7 @@ export default function App() {
         activeJd,
         candidateId,
         simulationIndex,
+        candidatePool,
       );
       setCandidates((current) =>
         current.map((candidate) =>
@@ -86,6 +88,7 @@ export default function App() {
           setCandidates([]);
           setJobTitle("");
           setActiveJd(sampleJd);
+          setCandidatePool([]);
           setResimulatingId(null);
           setView("input");
         }}
@@ -97,5 +100,14 @@ export default function App() {
     );
   }
 
-  return <JDInput defaultValue={sampleJd} error={error} onSubmit={handleSubmit} />;
+  return (
+    <JDInput
+      candidates={candidatePool}
+      defaultValue=""
+      error={error}
+      onCandidatesChange={setCandidatePool}
+      sampleValue={sampleJd}
+      onSubmit={handleSubmit}
+    />
+  );
 }

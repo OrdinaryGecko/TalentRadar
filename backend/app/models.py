@@ -40,6 +40,7 @@ class JobParseRequest(BaseModel):
 class MatchRequest(BaseModel):
     raw_description: str = Field(min_length=20)
     limit: int = Field(default=5, ge=1, le=20)
+    candidates: list["Candidate"] = Field(default_factory=list)
 
 
 class JobParseSignal(BaseModel):
@@ -120,6 +121,7 @@ class OutreachRequest(BaseModel):
     raw_description: str = Field(min_length=20)
     candidate_ids: list[str] = Field(default_factory=list)
     limit: int = Field(default=3, ge=1, le=10)
+    candidates: list["Candidate"] = Field(default_factory=list)
 
 
 class OutreachResult(BaseModel):
@@ -140,12 +142,14 @@ class OutreachResponse(BaseModel):
 class ShortlistRequest(BaseModel):
     raw_description: str = Field(min_length=20)
     limit: int = Field(default=5, ge=1, le=10)
+    candidates: list["Candidate"] = Field(default_factory=list)
 
 
 class ShortlistResimulateRequest(BaseModel):
     raw_description: str = Field(min_length=20)
     candidate_id: str = Field(min_length=3)
     simulation_index: int = Field(default=1, ge=1, le=20)
+    candidates: list["Candidate"] = Field(default_factory=list)
 
 
 class ConversationTurn(BaseModel):
@@ -178,3 +182,9 @@ class ShortlistEntry(BaseModel):
 class ShortlistResponse(BaseModel):
     parsed_job: JobParseResponse
     results: list[ShortlistEntry] = Field(default_factory=list)
+
+
+MatchRequest.model_rebuild()
+OutreachRequest.model_rebuild()
+ShortlistRequest.model_rebuild()
+ShortlistResimulateRequest.model_rebuild()

@@ -32,6 +32,13 @@ outreach_simulator = OutreachSimulator()
 shortlist_ranker = ShortlistRanker()
 
 
+def resolve_candidates(custom_candidates: list | None = None):
+    if custom_candidates:
+        return custom_candidates
+
+    return candidate_repository.list_candidates()
+
+
 @app.get("/health")
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
@@ -67,7 +74,7 @@ async def match_candidates(payload: MatchRequest) -> MatchResponse:
     parsed_job = job_description_parser.parse(payload.raw_description)
     results = await candidate_matcher.rank_candidates(
         parsed_job=parsed_job,
-        candidates=candidate_repository.list_candidates(),
+        candidates=resolve_candidates(payload.candidates),
         limit=payload.limit,
     )
 
@@ -77,9 +84,10 @@ async def match_candidates(payload: MatchRequest) -> MatchResponse:
 @app.post("/jobs/outreach", response_model=OutreachResponse)
 async def run_outreach(payload: OutreachRequest) -> OutreachResponse:
     parsed_job = job_description_parser.parse(payload.raw_description)
+    candidate_pool = resolve_candidates(payload.candidates)
     matched_results = await candidate_matcher.rank_candidates(
         parsed_job=parsed_job,
-        candidates=candidate_repository.list_candidates(),
+        candidates=candidate_pool,
         limit=max(payload.limit, len(payload.candidate_ids) or payload.limit),
     )
 
@@ -120,6 +128,7 @@ async def build_shortlist(payload: ShortlistRequest) -> ShortlistResponse:
             raw_description=payload.raw_description,
             limit=payload.limit,
             candidate_ids=[],
+            candidates=payload.candidates,
         )
     )
     shortlist = shortlist_ranker.rank(outreach_response.results)
@@ -135,7 +144,11 @@ async def resimulate_shortlist_entry(
     payload: ShortlistResimulateRequest,
 ) -> ShortlistEntry:
     parsed_job = job_description_parser.parse(payload.raw_description)
-    candidate = candidate_repository.get_candidate(payload.candidate_id)
+    candidate_pool = resolve_candidates(payload.candidates)
+    candidate = next(
+        (item for item in candidate_pool if item.id == payload.candidate_id),
+        None,
+    )
 
     if candidate is None:
         raise HTTPException(status_code=404, detail="Candidate not found")

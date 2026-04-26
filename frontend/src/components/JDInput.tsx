@@ -1,13 +1,26 @@
 import { useState } from "react";
 import { Briefcase, Sparkles } from "lucide-react";
 
+import type { CandidateSeedRecord } from "../types";
+import { CandidateSeed } from "./CandidateSeed";
+
 type JDInputProps = {
+  candidates: CandidateSeedRecord[];
   defaultValue: string;
   error: string | null;
+  onCandidatesChange: (candidates: CandidateSeedRecord[]) => void;
   onSubmit: (jd: string) => void | Promise<void>;
+  sampleValue: string;
 };
 
-export function JDInput({ defaultValue, error, onSubmit }: JDInputProps) {
+export function JDInput({
+  candidates,
+  defaultValue,
+  error,
+  onCandidatesChange,
+  onSubmit,
+  sampleValue
+}: JDInputProps) {
   const [jd, setJd] = useState(defaultValue);
 
   return (
@@ -43,7 +56,7 @@ export function JDInput({ defaultValue, error, onSubmit }: JDInputProps) {
           <div className="flex items-center justify-between border-t border-border/60 p-3">
             <button
               className="text-xs text-muted-foreground transition hover:text-foreground"
-              onClick={() => setJd(defaultValue)}
+              onClick={() => setJd(sampleValue)}
               type="button"
             >
               Try sample JD →
@@ -63,6 +76,8 @@ export function JDInput({ defaultValue, error, onSubmit }: JDInputProps) {
         {error ? (
           <p className="mt-4 text-center text-sm text-red-600">{error}</p>
         ) : null}
+
+        <CandidateSeed candidates={candidates} onChange={onCandidatesChange} />
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Powered by TalentRadar — local prototype

@@ -1,6 +1,13 @@
-import type { CandidateRecord, ShortlistResponse } from "../types";
+import type {
+  CandidateRecord,
+  CandidateSeedRecord,
+  ShortlistResponse,
+} from "../types";
 
-export async function buildShortlist(rawDescription: string): Promise<ShortlistResponse> {
+export async function buildShortlist(
+  rawDescription: string,
+  candidates: CandidateSeedRecord[],
+): Promise<ShortlistResponse> {
   const response = await fetch("/jobs/shortlist", {
     method: "POST",
     headers: {
@@ -8,7 +15,8 @@ export async function buildShortlist(rawDescription: string): Promise<ShortlistR
     },
     body: JSON.stringify({
       raw_description: rawDescription,
-      limit: 6
+      limit: 6,
+      candidates,
     })
   });
 
@@ -22,7 +30,8 @@ export async function buildShortlist(rawDescription: string): Promise<ShortlistR
 export async function resimulateCandidate(
   rawDescription: string,
   candidateId: string,
-  simulationIndex: number
+  simulationIndex: number,
+  candidates: CandidateSeedRecord[],
 ): Promise<CandidateRecord> {
   const response = await fetch("/jobs/shortlist/resimulate", {
     method: "POST",
@@ -32,7 +41,8 @@ export async function resimulateCandidate(
     body: JSON.stringify({
       raw_description: rawDescription,
       candidate_id: candidateId,
-      simulation_index: simulationIndex
+      simulation_index: simulationIndex,
+      candidates,
     })
   });
 

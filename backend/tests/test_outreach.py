@@ -94,3 +94,45 @@ async def test_outreach_resimulation_changes_simulation_index() -> None:
     assert payload["candidate"]["id"] == "cand_001"
     assert payload["conversation"]["simulation_index"] == 2
     assert len(payload["conversation"]["transcript"]) == 4
+
+
+@pytest.mark.anyio
+async def test_outreach_accepts_string_transcript_payload() -> None:
+    parsed_job = JobDescriptionParser().parse(SAMPLE_OUTREACH_JD)
+    match_result = (
+        await CandidateMatcher().rank_candidates(
+            parsed_job=parsed_job,
+            candidates=load_candidate_fixture(),
+            limit=1,
+        )
+    )[0]
+    simulator = OutreachSimulator()
+
+    transcript = simulator._coerce_transcript(
+        [
+            "Recruiter opener",
+            "Candidate reply",
+            "Recruiter followup",
+            "Candidate followup",
+        ],
+        fallback=[],
+    )
+    interest = simulator._coerce_interest(
+        llm_payload={
+            "interest_score": 45,
+            "interest_level": "passive",
+            "positives": ["open to learning"],
+            "blockers": ["missing required capabilities"],
+            "summary": "Candidate is passively open.",
+        },
+        parsed_job=parsed_job,
+        candidate_result=match_result,
+    )
+
+    assert [item.speaker for item in transcript] == [
+        "recruiter",
+        "candidate",
+        "recruiter",
+        "candidate",
+    ]
+    assert interest.interest_level == "medium"
