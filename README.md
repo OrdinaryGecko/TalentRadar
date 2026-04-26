@@ -1,3 +1,12 @@
+---
+title: TalentRadar
+emoji: 🐳
+colorFrom: blue
+colorTo: gray
+sdk: docker
+app_port: 7860
+---
+
 # TalentRadar
 
 Scan. Match. Engage. Hire.

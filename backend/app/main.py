@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
 from app.jd_parser import JobDescriptionParser
 from app.matcher import CandidateMatcher
@@ -30,6 +33,7 @@ job_description_parser = JobDescriptionParser()
 candidate_matcher = CandidateMatcher()
 outreach_simulator = OutreachSimulator()
 shortlist_ranker = ShortlistRanker()
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
 
 def resolve_candidates(custom_candidates: list | None = None):
@@ -173,3 +177,7 @@ async def resimulate_shortlist_entry(
     )
 
     return shortlist_ranker.to_shortlist_entry(outreach_result)
+
+
+if FRONTEND_DIST.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
