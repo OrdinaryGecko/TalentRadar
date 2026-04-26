@@ -58,6 +58,19 @@ npm run dev
 
 Frontend runs on `http://127.0.0.1:5173` and proxies API calls to the backend on `http://127.0.0.1:8000`.
 
+## Docker Setup
+
+Run the full app in one container from the repo root:
+
+```bash
+docker build -t talentradar .
+docker run --rm -p 7860:7860 --env-file backend/.env talentradar
+```
+
+Then open `http://127.0.0.1:7860`.
+
+If you do not need a live LLM provider, you can omit `--env-file backend/.env` and the app will use the local fallback mode.
+
 ## LLM Configuration
 
 TalentRadar supports provider-based explanation generation. Put these in `backend/.env`:
