@@ -80,7 +80,7 @@ export function JDInput({
         <CandidateSeed candidates={candidates} onChange={onCandidatesChange} />
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Powered by TalentRadar — local prototype
+          Powered by TalentHire
         </p>
       </div>
     </div>

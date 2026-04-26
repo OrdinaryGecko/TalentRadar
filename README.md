@@ -173,25 +173,11 @@ Sample shortlist result for the above input:
    `interest_score: 51.0`
    `combined_score: 59.0`
 
-Detailed sample output is documented in [docs/sample-output.md](/home/sumit/Programming/deccanai/catalyst/docs/sample-output.md).
-
-## How To Demo
-
-Suggested demo flow:
-
-1. open the React dashboard
-2. paste the sample JD
-3. submit and show the parsed requirements panel
-4. highlight shortlist ranking and explanation summaries
-5. open the conversation snapshot for top candidates
-6. explain why a high-fit but missing-preferred-skill candidate still ranks strongly
-7. explain why a lower-fit but more interested candidate can move upward
-
-Detailed talking points are in [docs/demo-script.md](/home/sumit/Programming/deccanai/catalyst/docs/demo-script.md).
+Detailed sample output is documented in [docs/sample-output.md](docs/sample-output.md).
 
 ## Architecture
 
-See [docs/architecture.md](/home/sumit/Programming/deccanai/catalyst/docs/architecture.md) for:
+See [docs/architecture.md](docs/architecture.md) for:
 
 - system flow
 - component responsibilities
