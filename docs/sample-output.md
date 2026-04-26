@@ -19,6 +19,64 @@ Nice to have:
 - AWS
 ```
 
+## Sample Candidate Pool
+
+```json
+[
+  {
+    "id": "cand_001",
+    "full_name": "Aditi Rao",
+    "headline": "Senior AI backend engineer building production RAG systems",
+    "location": "Bengaluru, India",
+    "work_mode_preferences": ["remote", "hybrid"],
+    "years_experience": 7,
+    "current_title": "Senior AI Engineer",
+    "current_company": "VectorTrail",
+    "skills": ["Python", "FastAPI", "LLMs", "RAG", "PostgreSQL", "pgvector"],
+    "domain_experience": ["SaaS", "developer tools"],
+    "summary": "Owns backend architecture for retrieval systems, LLM evaluation pipelines, and recruiter tooling integrations.",
+    "persona": "passively_open",
+    "availability_days": 30,
+    "compensation_expectation_lpa": 38,
+    "engagement_status": "passive"
+  },
+  {
+    "id": "cand_002",
+    "full_name": "Rahul Menon",
+    "headline": "ML engineer with strong experimentation and ranking background",
+    "location": "Pune, India",
+    "work_mode_preferences": ["remote"],
+    "years_experience": 5,
+    "current_title": "Machine Learning Engineer",
+    "current_company": "ScoutGrid",
+    "skills": ["Python", "PyTorch", "LLMs", "ranking systems", "Airflow", "AWS"],
+    "domain_experience": ["HR tech", "marketplaces"],
+    "summary": "Built candidate ranking pipelines and retrieval-based recommender systems for hiring marketplaces.",
+    "persona": "actively_looking",
+    "availability_days": 15,
+    "compensation_expectation_lpa": 28,
+    "engagement_status": "active"
+  },
+  {
+    "id": "cand_004",
+    "full_name": "Arjun Nair",
+    "headline": "Full-stack engineer shipping AI copilots for enterprise workflows",
+    "location": "Kochi, India",
+    "work_mode_preferences": ["remote"],
+    "years_experience": 6,
+    "current_title": "Lead Software Engineer",
+    "current_company": "OpsHarbor",
+    "skills": ["TypeScript", "React", "Node.js", "Python", "LLMs", "LangChain"],
+    "domain_experience": ["enterprise SaaS", "operations"],
+    "summary": "Built internal copilots and workflow assistants, with moderate backend exposure and strong product thinking.",
+    "persona": "compensation_sensitive",
+    "availability_days": 45,
+    "compensation_expectation_lpa": 42,
+    "engagement_status": "passive"
+  }
+]
+```
+
 ## Parsed Requirements
 
 ```json
