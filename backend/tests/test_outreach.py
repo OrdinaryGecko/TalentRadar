@@ -37,7 +37,7 @@ async def test_outreach_simulator_generates_conversation_and_interest() -> None:
         )
     )[0]
 
-    conversation, interest = OutreachSimulator().run(
+    conversation, interest, adjusted_match_score = await OutreachSimulator().run(
         parsed_job=parsed_job,
         candidate_result=match_result,
     )
@@ -47,6 +47,7 @@ async def test_outreach_simulator_generates_conversation_and_interest() -> None:
     assert interest.interest_level in {"high", "medium", "low"}
     assert interest.interest_score > 0
     assert interest.summary
+    assert adjusted_match_score >= 0
 
 
 @pytest.mark.anyio
@@ -68,3 +69,28 @@ async def test_outreach_endpoint_returns_interest_results() -> None:
     assert len(payload["results"]) == 2
     assert payload["results"][0]["conversation"]["transcript"][0]["speaker"] == "recruiter"
     assert payload["results"][0]["interest"]["interest_score"] >= 0
+    assert "base_match_score" in payload["results"][0]
+    assert "match_adjustment" in payload["results"][0]
+
+
+@pytest.mark.anyio
+async def test_outreach_resimulation_changes_simulation_index() -> None:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://testserver",
+    ) as client:
+        response = await client.post(
+            "/jobs/shortlist/resimulate",
+            json={
+                "raw_description": SAMPLE_OUTREACH_JD,
+                "candidate_id": "cand_001",
+                "simulation_index": 2,
+            },
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["candidate"]["id"] == "cand_001"
+    assert payload["conversation"]["simulation_index"] == 2
+    assert len(payload["conversation"]["transcript"]) == 4

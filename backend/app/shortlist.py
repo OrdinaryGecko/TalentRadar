@@ -18,7 +18,7 @@ class ShortlistRanker:
 
     def rank(self, outreach_results: list[OutreachResult]) -> list[ShortlistEntry]:
         ranked = [
-            self._to_shortlist_entry(result)
+            self.to_shortlist_entry(result)
             for result in outreach_results
             if result.interest and result.conversation
         ]
@@ -26,7 +26,7 @@ class ShortlistRanker:
 
         return ranked
 
-    def _to_shortlist_entry(self, result: OutreachResult) -> ShortlistEntry:
+    def to_shortlist_entry(self, result: OutreachResult) -> ShortlistEntry:
         interest = result.interest or InterestAssessment(
             interest_score=0,
             interest_level="low",
@@ -41,7 +41,9 @@ class ShortlistRanker:
 
         return ShortlistEntry(
             candidate=result.candidate,
+            base_match_score=result.base_match_score,
             match_score=result.match_score,
+            match_adjustment=result.match_adjustment,
             interest_score=interest.interest_score,
             combined_score=round(
                 result.match_score * self.match_weight

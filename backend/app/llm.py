@@ -56,6 +56,7 @@ class LLMClient:
         self,
         system_prompt: str,
         user_prompt: str,
+        temperature: float | None = None,
     ) -> dict[str, object] | None:
         provider = self.settings.provider.lower()
 
@@ -63,12 +64,14 @@ class LLMClient:
             return await self._generate_openai_compatible_json(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
+                temperature=temperature,
             )
 
         if provider == "gemini":
             return await self._generate_gemini_json(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
+                temperature=temperature,
             )
 
         return None
@@ -77,6 +80,7 @@ class LLMClient:
         self,
         system_prompt: str,
         user_prompt: str,
+        temperature: float | None = None,
     ) -> dict[str, object] | None:
         default_base_urls = {
             "openai": "https://api.openai.com/v1",
@@ -92,6 +96,9 @@ class LLMClient:
                 {"role": "user", "content": user_prompt},
             ],
         }
+
+        if temperature is not None:
+            payload["temperature"] = temperature
         headers = {
             "Authorization": f"Bearer {self.settings.api_key}",
             "Content-Type": "application/json",
@@ -110,6 +117,7 @@ class LLMClient:
         self,
         system_prompt: str,
         user_prompt: str,
+        temperature: float | None = None,
     ) -> dict[str, object] | None:
         base_url = self.settings.base_url or "https://generativelanguage.googleapis.com/v1beta"
         model = self.settings.model
@@ -117,8 +125,15 @@ class LLMClient:
             f"{base_url.rstrip('/')}/models/{model}:generateContent"
             f"?key={self.settings.api_key}"
         )
+        generation_config: dict[str, object] = {
+            "responseMimeType": "application/json"
+        }
+
+        if temperature is not None:
+            generation_config["temperature"] = temperature
+
         payload = {
-            "generationConfig": {"responseMimeType": "application/json"},
+            "generationConfig": generation_config,
             "systemInstruction": {
                 "parts": [{"text": system_prompt}],
             },

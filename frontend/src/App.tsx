@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dashboard } from "./components/Dashboard";
 import { JDInput } from "./components/JDInput";
 import { ProcessingState } from "./components/ProcessingState";
-import { buildShortlist } from "./lib/api";
+import { buildShortlist, resimulateCandidate } from "./lib/api";
 import type { CandidateRecord } from "./types";
 
 type View = "input" | "processing" | "dashboard";
@@ -26,9 +26,11 @@ Nice to have:
 export default function App() {
   const [view, setView] = useState<View>("input");
   const [error, setError] = useState<string | null>(null);
+  const [activeJd, setActiveJd] = useState<string>(sampleJd);
   const [jobTitle, setJobTitle] = useState<string>("");
   const [candidates, setCandidates] = useState<CandidateRecord[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [resimulatingId, setResimulatingId] = useState<string | null>(null);
 
   async function handleSubmit(jd: string) {
     setView("processing");
@@ -36,6 +38,7 @@ export default function App() {
 
     try {
       const shortlist = await buildShortlist(jd);
+      setActiveJd(jd);
       setJobTitle(shortlist.parsed_job.normalized_requirement.role);
       setCandidates(shortlist.results);
       setSelectedId(null);
@@ -47,6 +50,25 @@ export default function App() {
           : "Unable to build shortlist."
       );
       setView("input");
+    }
+  }
+
+  async function handleResimulate(candidateId: string, simulationIndex: number) {
+    setResimulatingId(candidateId);
+
+    try {
+      const refreshed = await resimulateCandidate(
+        activeJd,
+        candidateId,
+        simulationIndex,
+      );
+      setCandidates((current) =>
+        current.map((candidate) =>
+          candidate.candidate.id === candidateId ? refreshed : candidate
+        )
+      );
+    } finally {
+      setResimulatingId(null);
     }
   }
 
@@ -63,9 +85,13 @@ export default function App() {
           setSelectedId(null);
           setCandidates([]);
           setJobTitle("");
+          setActiveJd(sampleJd);
+          setResimulatingId(null);
           setView("input");
         }}
+        onResimulate={handleResimulate}
         onSelect={setSelectedId}
+        resimulatingId={resimulatingId}
         selectedId={selectedId}
       />
     );

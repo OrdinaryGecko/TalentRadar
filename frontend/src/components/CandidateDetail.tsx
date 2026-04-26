@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Heart, MessageSquare, Sparkles, X } from "lucide-react";
+import { Heart, MessageSquare, RefreshCw, Sparkles, X } from "lucide-react";
 
 import { candidateTags } from "../lib/tags";
 import type { CandidateRecord } from "../types";
@@ -7,10 +7,17 @@ import { ScoreBar } from "./ScoreBar";
 
 type CandidateDetailProps = {
   candidate: CandidateRecord | null;
+  isResimulating: boolean;
   onClose: () => void;
+  onResimulate: (candidateId: string, simulationIndex: number) => Promise<void>;
 };
 
-export function CandidateDetail({ candidate, onClose }: CandidateDetailProps) {
+export function CandidateDetail({
+  candidate,
+  isResimulating,
+  onClose,
+  onResimulate
+}: CandidateDetailProps) {
   if (!candidate) {
     return null;
   }
@@ -99,11 +106,29 @@ export function CandidateDetail({ candidate, onClose }: CandidateDetailProps) {
           />
 
           <div>
-            <div className="mb-4 flex items-center gap-2">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
               <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Simulated Outreach
               </h4>
+              </div>
+              <button
+                className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium text-foreground transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isResimulating}
+                onClick={() =>
+                  onResimulate(
+                    candidate.candidate.id,
+                    candidate.conversation.simulation_index + 1
+                  )
+                }
+                type="button"
+              >
+                <RefreshCw
+                  className={`h-3.5 w-3.5 ${isResimulating ? "animate-spin" : ""}`}
+                />
+                Re-simulate
+              </button>
             </div>
             <div className="space-y-3">
               {candidate.conversation.transcript.map((message) => (

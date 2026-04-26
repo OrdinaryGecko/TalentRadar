@@ -10,7 +10,9 @@ from app.models import (
     OutreachRequest,
     OutreachResponse,
     OutreachResult,
+    ShortlistEntry,
     ShortlistRequest,
+    ShortlistResimulateRequest,
     ShortlistResponse,
 )
 from app.outreach import OutreachSimulator
@@ -92,14 +94,16 @@ async def run_outreach(payload: OutreachRequest) -> OutreachResponse:
     outreach_results: list[OutreachResult] = []
 
     for result in matched_results:
-        conversation, interest = outreach_simulator.run(
+        conversation, interest, adjusted_match_score = await outreach_simulator.run(
             parsed_job=parsed_job,
             candidate_result=result,
         )
         outreach_results.append(
             OutreachResult(
                 candidate=result.candidate,
-                match_score=result.match_score,
+                base_match_score=result.match_score,
+                match_score=adjusted_match_score,
+                match_adjustment=round(adjusted_match_score - result.match_score, 1),
                 explanation=result.explanation,
                 conversation=conversation,
                 interest=interest,
@@ -124,3 +128,35 @@ async def build_shortlist(payload: ShortlistRequest) -> ShortlistResponse:
         parsed_job=outreach_response.parsed_job,
         results=shortlist,
     )
+
+
+@app.post("/jobs/shortlist/resimulate", response_model=ShortlistEntry)
+async def resimulate_shortlist_entry(
+    payload: ShortlistResimulateRequest,
+) -> ShortlistEntry:
+    parsed_job = job_description_parser.parse(payload.raw_description)
+    candidate = candidate_repository.get_candidate(payload.candidate_id)
+
+    if candidate is None:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    match_result = await candidate_matcher.score_candidate(
+        parsed_job=parsed_job,
+        candidate=candidate,
+    )
+    conversation, interest, adjusted_match_score = await outreach_simulator.run(
+        parsed_job=parsed_job,
+        candidate_result=match_result,
+        simulation_index=payload.simulation_index,
+    )
+    outreach_result = OutreachResult(
+        candidate=match_result.candidate,
+        base_match_score=match_result.match_score,
+        match_score=adjusted_match_score,
+        match_adjustment=round(adjusted_match_score - match_result.match_score, 1),
+        explanation=match_result.explanation,
+        conversation=conversation,
+        interest=interest,
+    )
+
+    return shortlist_ranker.to_shortlist_entry(outreach_result)

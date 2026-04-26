@@ -4,6 +4,13 @@ export type TranscriptTurn = {
   turn_index: number;
 };
 
+export type ConversationRecord = {
+  simulation_index: number;
+  provider: string;
+  generation_mode: string;
+  transcript: TranscriptTurn[];
+};
+
 export type CandidateRecord = {
   candidate: {
     id: string;
@@ -14,7 +21,9 @@ export type CandidateRecord = {
     location: string;
     skills?: string[];
   };
+  base_match_score: number;
   match_score: number;
+  match_adjustment: number;
   interest_score: number;
   combined_score: number;
   explanation: {
@@ -35,9 +44,7 @@ export type CandidateRecord = {
     blockers: string[];
     summary: string;
   };
-  conversation: {
-    transcript: TranscriptTurn[];
-  };
+  conversation: ConversationRecord;
 };
 
 export type ShortlistResponse = {

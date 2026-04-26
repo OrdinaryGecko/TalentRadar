@@ -46,6 +46,14 @@ class CandidateMatcher:
 
         return results[:limit]
 
+    async def score_candidate(
+        self,
+        *,
+        parsed_job: JobParseResponse,
+        candidate: Candidate,
+    ) -> CandidateMatchResult:
+        return await self._score_candidate(parsed_job=parsed_job, candidate=candidate)
+
     async def _score_candidate(
         self,
         parsed_job: JobParseResponse,

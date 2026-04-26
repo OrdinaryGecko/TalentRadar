@@ -124,7 +124,9 @@ class OutreachRequest(BaseModel):
 
 class OutreachResult(BaseModel):
     candidate: Candidate
+    base_match_score: float
     match_score: float
+    match_adjustment: float = 0.0
     explanation: MatchExplanation
     conversation: Conversation | None = None
     interest: InterestAssessment | None = None
@@ -140,6 +142,12 @@ class ShortlistRequest(BaseModel):
     limit: int = Field(default=5, ge=1, le=10)
 
 
+class ShortlistResimulateRequest(BaseModel):
+    raw_description: str = Field(min_length=20)
+    candidate_id: str = Field(min_length=3)
+    simulation_index: int = Field(default=1, ge=1, le=20)
+
+
 class ConversationTurn(BaseModel):
     speaker: str
     message: str
@@ -149,12 +157,17 @@ class ConversationTurn(BaseModel):
 class Conversation(BaseModel):
     job_id: str
     candidate_id: str
+    simulation_index: int = 0
+    provider: str = "local"
+    generation_mode: str = "deterministic"
     transcript: list[ConversationTurn] = Field(default_factory=list)
 
 
 class ShortlistEntry(BaseModel):
     candidate: Candidate
+    base_match_score: float
     match_score: float
+    match_adjustment: float = 0.0
     interest_score: float
     combined_score: float
     explanation: MatchExplanation

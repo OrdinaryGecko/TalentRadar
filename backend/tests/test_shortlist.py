@@ -42,13 +42,15 @@ async def test_shortlist_ranker_combines_match_and_interest() -> None:
     payload = [
         OutreachResult(
             candidate=result.candidate,
-            match_score=result.match_score,
+            base_match_score=result.match_score,
+            match_score=adjusted_match_score,
+            match_adjustment=round(adjusted_match_score - result.match_score, 1),
             explanation=result.explanation,
             conversation=conversation,
             interest=interest,
         )
         for result in matched
-        for conversation, interest in [simulator.run(
+        for conversation, interest, adjusted_match_score in [await simulator.run(
             parsed_job=parsed_job,
             candidate_result=result,
         )]

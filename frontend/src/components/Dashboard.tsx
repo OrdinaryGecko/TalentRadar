@@ -9,7 +9,9 @@ type DashboardProps = {
   candidates: CandidateRecord[];
   jobTitle: string;
   onReset: () => void;
+  onResimulate: (candidateId: string, simulationIndex: number) => Promise<void>;
   onSelect: (candidateId: string | null) => void;
+  resimulatingId: string | null;
   selectedId: string | null;
 };
 
@@ -25,7 +27,9 @@ export function Dashboard({
   candidates,
   jobTitle,
   onReset,
+  onResimulate,
   onSelect,
+  resimulatingId,
   selectedId
 }: DashboardProps) {
   const [sortKey, setSortKey] = useState<SortKey>("combined_score");
@@ -122,7 +126,15 @@ export function Dashboard({
         </section>
       </main>
 
-      <CandidateDetail candidate={selectedCandidate} onClose={() => onSelect(null)} />
+      <CandidateDetail
+        candidate={selectedCandidate}
+        isResimulating={
+          selectedCandidate?.candidate.id != null &&
+          resimulatingId === selectedCandidate.candidate.id
+        }
+        onClose={() => onSelect(null)}
+        onResimulate={onResimulate}
+      />
     </div>
   );
 }
