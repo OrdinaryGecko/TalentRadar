@@ -130,7 +130,7 @@ class OutreachResult(BaseModel):
     match_score: float
     match_adjustment: float = 0.0
     explanation: MatchExplanation
-    conversation: Conversation | None = None
+    conversation: "Conversation | None" = None
     interest: InterestAssessment | None = None
 
 
@@ -176,7 +176,7 @@ class ShortlistEntry(BaseModel):
     combined_score: float
     explanation: MatchExplanation
     interest: InterestAssessment
-    conversation: Conversation
+    conversation: "Conversation"
 
 
 class ShortlistResponse(BaseModel):
