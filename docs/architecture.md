@@ -1,5 +1,9 @@
 # TalentRadar Architecture
 
+## Architecture Diagram
+
+<img src="./architecture.svg" alt="TalentRadar architecture diagram" />
+
 ## End-to-End Flow
 
 ```text
@@ -218,4 +222,3 @@ This makes it easier to:
 2. Add LLM-based JD extraction on top of the current parser contract
 3. Add LLM-based outreach simulation with deterministic fallback
 4. Add database persistence and export
-5. Add architecture diagram image for the final submission
